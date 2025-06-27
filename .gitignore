@@ -1,0 +1,21 @@
+# --- General ---
+.DS_Store
+.env
+*.log
+*.zip
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+dist/
+out/
+
+# --- Backend / Frontend specific ---
+frontend/node_modules/
+backend/node_modules/
+backend/.env
+
+# --- OS / Editor ---
+Thumbs.db
+.vscode/
+.idea/
