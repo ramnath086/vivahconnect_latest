@@ -1,13 +1,19 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API || 'http://localhost:5000/api'
+  baseURL: 'https://vivahconnect-latest-api.onrender.com/api',
+  withCredentials: true
 });
 
-api.interceptors.request.use(cfg => {
-  const token = typeof window !== 'undefined' && localStorage.getItem('token');
-  if (token) cfg.headers.Authorization = `Bearer ${token}`;
-  return cfg;
+// Attach token to every request automatically
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 export default api;
