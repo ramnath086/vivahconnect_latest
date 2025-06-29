@@ -23,7 +23,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: 'https://vivahconnect-latest.vercel.app',
-    credentials: true,
+    credentials: false,
   },
 });
 
