@@ -1,27 +1,58 @@
 import { useState } from 'react';
-import api from '@/services/api';
 import { useRouter } from 'next/router';
+import api from '@/services/api';
 
 export default function Signup() {
-  const [form, setForm] = useState({ firstName:'', lastName:'', email:'', password:'' });
   const router = useRouter();
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+  });
+  const [loading, setLoading] = useState(false);
 
-  const submit = async e => {
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { data } = await api.post('/auth/register', form);
-    localStorage.setItem('token', data.token);
-    router.push('/dashboard');
+    setLoading(true);
+    try {
+      const { data } = await api.post('/auth/register', form);
+      localStorage.setItem('token', data.token); // ✅ save token
+      router.push('/dashboard');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Signup failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <main className="h-screen flex items-center justify-center">
-      <form className="border rounded-xl p-8 w-96 space-y-4" onSubmit={submit}>
-        <h2 className="text-2xl font-bold text-center">Sign Up</h2>
-        {['firstName','lastName','email','password'].map(k => (
-          <input key={k} className="border p-2 w-full rounded" type={k==='password'?'password':'text'} placeholder={k.charAt(0).toUpperCase()+k.slice(1)} value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))}/>
+    <div className="max-w-sm mx-auto mt-20 space-y-4">
+      <h1 className="text-2xl font-bold text-center">Sign Up</h1>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        {['firstName','lastName','email','password'].map((field, idx) => (
+          <input
+            key={idx}
+            type={field === 'password' ? 'password' : 'text'}
+            name={field}
+            placeholder={field.replace(/([A-Z])/g,' $1')}
+            className="w-full border p-2 rounded"
+            value={form[field]}
+            onChange={handleChange}
+            required
+          />
         ))}
-        <button className="bg-indigo-600 text-white w-full py-2 rounded" type="submit">Create Account</button>
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 text-white py-2 rounded"
+          disabled={loading}
+        >
+          {loading ? 'Creating…' : 'Create Account'}
+        </button>
       </form>
-    </main>
+    </div>
   );
 }

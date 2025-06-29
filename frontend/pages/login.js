@@ -1,27 +1,59 @@
 import { useState } from 'react';
-import api from '@/services/api';
 import { useRouter } from 'next/router';
+import api from '@/services/api';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const router = useRouter();
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
-  const submit = async e => {
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const { data } = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', data.token);
-    router.push('/dashboard');
+    setLoading(true);
+    try {
+      const { data } = await api.post('/auth/login', form);
+      localStorage.setItem('token', data.token); // ✅ save token
+      router.push('/dashboard');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <main className="h-screen flex items-center justify-center">
-      <form className="border rounded-xl p-8 w-80 space-y-4" onSubmit={submit}>
-        <h2 className="text-2xl font-bold text-center">Log In</h2>
-        <input className="border p-2 w-full rounded" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}/>
-        <input type="password" className="border p-2 w-full rounded" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}/>
-        <button className="bg-indigo-600 text-white w-full py-2 rounded" type="submit">Login</button>
+    <div className="max-w-sm mx-auto mt-20 space-y-4">
+      <h1 className="text-2xl font-bold text-center">Login</h1>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          className="w-full border p-2 rounded"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          className="w-full border p-2 rounded"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+        <button
+          type="submit"
+          className="w-full bg-indigo-600 text-white py-2 rounded"
+          disabled={loading}
+        >
+          {loading ? 'Logging in…' : 'Login'}
+        </button>
       </form>
-    </main>
+    </div>
   );
 }
