@@ -27,10 +27,12 @@ const io = new Server(server, {
 });
 
 // ✅ Proper CORS configuration
+import cors from 'cors';
+…
 app.use(
   cors({
     origin: 'https://vivahconnect-latest.vercel.app',
-    credentials: true, // ✅ FIXED: no extra space!
+    credentials: true            // ✅ must be true when withCredentials is used
   })
 );
 
