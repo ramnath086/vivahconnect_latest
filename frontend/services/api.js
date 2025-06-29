@@ -1,13 +1,10 @@
-// frontend/services/api.js
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://vivahconnect-latest-api.onrender.com/api',
-  withCredentials: true            // ✅ keep credentials (cookies / CORS)
+  baseURL: 'https://vivahconnect-latest-api.onrender.com/api'
 });
 
-// attach JWT if present
-api.interceptors.request.use(cfg => {
+api.interceptors.request.use((cfg) => {
   const token = localStorage.getItem('token');
   if (token) cfg.headers.Authorization = `Bearer ${token}`;
   return cfg;
