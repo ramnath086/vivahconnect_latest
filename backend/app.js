@@ -25,10 +25,12 @@ const io = new Server(server, {
 });
 
 // ✅ Proper CORS
-app.use(cors({
-  origin: 'https://vivahconnect-latest.vercel.app',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: 'https://vivahconnect-latest.vercel.app', // your Vercel URL
+    credentials: false                                // using Bearer token, not cookies
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
