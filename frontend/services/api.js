@@ -1,19 +1,16 @@
+// frontend/services/api.js
 import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://vivahconnect-latest-api.onrender.com/api',
-  // ❌ Remove withCredentials (you’re using Bearer token, not cookies)
-  // withCredentials: true
+  withCredentials: true            // ✅ keep credentials (cookies / CORS)
 });
 
-// ✅ Always attach token
-api.interceptors.request.use(config => {
+// attach JWT if present
+api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('token');
-  console.log('[Interceptor] Token:', token); // 👀 Confirm token shows
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, error => Promise.reject(error));
+  if (token) cfg.headers.Authorization = `Bearer ${token}`;
+  return cfg;
+});
 
 export default api;
