@@ -3,8 +3,11 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://vivahconnect-latest-api.onrender.com/api',
-  withCredentials: false      // NO cookies – we use Bearer token
+  withCredentials: false          // ← only false here
 });
+
+// make sure NO global default remains
+axios.defaults.withCredentials = false;
 
 api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('token');
